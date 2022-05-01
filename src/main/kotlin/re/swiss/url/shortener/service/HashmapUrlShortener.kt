@@ -11,11 +11,7 @@ class HashmapUrlShortener(private val randomIdGenerator: RandomIdGenerator,
     override fun createAlias(url: String, keyword: String?): Url? {
         if (keyword != null) {
             val newUrl = Url(keyword, url)
-            return if (storage.put(keyword, newUrl)) {
-                newUrl
-            } else {
-                null
-            }
+            return if (storage.put(keyword, newUrl)) newUrl else null
         } else {
             for (i in 0..maxAttempts) {
                 val key = randomIdGenerator.randomId()
