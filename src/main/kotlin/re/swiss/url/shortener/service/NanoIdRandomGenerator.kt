@@ -5,7 +5,7 @@ import java.security.SecureRandom
 
 class NanoIdRandomGenerator: RandomIdGenerator {
 
-    private val alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
+    private val alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
     private val random = SecureRandom();
 
     override fun randomId(): String {
