@@ -48,7 +48,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>re.swiss.url.shortener.MainKt</mainClass>
+                                    <mainClass>re.swiss.url.shortener.UrlShortenerKt</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

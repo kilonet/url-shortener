@@ -4,16 +4,19 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.ThrowingSupplier
 import org.mockito.Mockito
+import re.swiss.url.shortener.service.ConcurrentHashMapUrlStorage
+import re.swiss.url.shortener.exception.GenerateKeyFailedException
 import re.swiss.url.shortener.service.HashmapUrlShortener
 import re.swiss.url.shortener.service.NanoIdRandomGenerator
 import re.swiss.url.shortener.service.RandomIdGenerator
 import java.time.Duration
+import java.util.concurrent.ConcurrentHashMap
 
 class HashmapUrlShortenerTest {
 
     @Test
     fun keywordGenerate() {
-        val urlShortener = HashmapUrlShortener(NanoIdRandomGenerator())
+        val urlShortener = HashmapUrlShortener(NanoIdRandomGenerator(), ConcurrentHashMapUrlStorage(ConcurrentHashMap()))
         val url = "http://somews.com/abc/1/page.html"
         val keyword = "myLovelyPage"
 
@@ -26,7 +29,7 @@ class HashmapUrlShortenerTest {
 
     @Test
     fun overwriteExistingNotAllowed() {
-        val urlShortener = HashmapUrlShortener(NanoIdRandomGenerator())
+        val urlShortener = HashmapUrlShortener(NanoIdRandomGenerator(), ConcurrentHashMapUrlStorage(ConcurrentHashMap()))
         val url = "http://somews.com/abc/1/page.html"
         val anotherUrl = "http://somews.com/def/2/page.html"
         val keyword = "myLovelyPage"
@@ -40,7 +43,7 @@ class HashmapUrlShortenerTest {
 
     @Test
     fun randomIdGenerate() {
-        val urlShortener = HashmapUrlShortener(NanoIdRandomGenerator())
+        val urlShortener = HashmapUrlShortener(NanoIdRandomGenerator(), ConcurrentHashMapUrlStorage(ConcurrentHashMap()))
         val url = "http://somews.com/abc/1/page.html"
 
         val alias = urlShortener.createAlias(url)
@@ -52,7 +55,7 @@ class HashmapUrlShortenerTest {
     fun collisionsResolved() {
         val randomIdGenerator = Mockito.mock(RandomIdGenerator::class.java)
         Mockito.`when`(randomIdGenerator.randomId()).thenReturn("a", "a", "b")
-        val urlShortener = HashmapUrlShortener(randomIdGenerator)
+        val urlShortener = HashmapUrlShortener(randomIdGenerator, ConcurrentHashMapUrlStorage(ConcurrentHashMap()))
 
         urlShortener.createAlias("google.com")
         val createAlias = urlShortener.createAlias("strava.com")
@@ -64,19 +67,19 @@ class HashmapUrlShortenerTest {
     fun collisionsTimeout() {
         val randomIdGenerator = Mockito.mock(RandomIdGenerator::class.java)
         Mockito.`when`(randomIdGenerator.randomId()).thenReturn("a")
-        val urlShortener = HashmapUrlShortener(randomIdGenerator)
+        val urlShortener = HashmapUrlShortener(randomIdGenerator, ConcurrentHashMapUrlStorage(ConcurrentHashMap()))
 
         urlShortener.createAlias("google.com")
 
         Assertions.assertTimeoutPreemptively(Duration.ofMillis(100), ThrowingSupplier {
             try {
                 urlShortener.createAlias("strava.com")
-            } catch (e: IllegalStateException) {
+            } catch (e: GenerateKeyFailedException) {
                 return@ThrowingSupplier e
             }
         })
 
-        Assertions.assertThrows(IllegalStateException::class.java) {
+        Assertions.assertThrows(GenerateKeyFailedException::class.java) {
             urlShortener.createAlias("strava.com")
         }
     }
