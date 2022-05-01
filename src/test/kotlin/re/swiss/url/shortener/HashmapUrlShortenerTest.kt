@@ -20,8 +20,8 @@ class HashmapUrlShortenerTest {
         val url = "http://somews.com/abc/1/page.html"
         val keyword = "myLovelyPage"
 
-        urlShortener.createAlias(url, keyword)
-        val alias = urlShortener.getAlias(keyword)
+        val createdAlias = urlShortener.createAlias(url, keyword)
+        val alias = urlShortener.getAlias(createdAlias!!.key)
 
         Assertions.assertTrue(alias?.url == url)
         Assertions.assertTrue(alias?.key == keyword)
@@ -58,9 +58,9 @@ class HashmapUrlShortenerTest {
         val urlShortener = HashmapUrlShortener(randomIdGenerator, ConcurrentHashMapUrlStorage(ConcurrentHashMap()))
 
         urlShortener.createAlias("google.com")
-        val createAlias = urlShortener.createAlias("strava.com")
+        val alias = urlShortener.createAlias("strava.com")
 
-        Assertions.assertTrue(createAlias?.key == "b");
+        Assertions.assertTrue(alias?.key == "b");
     }
 
     @Test()

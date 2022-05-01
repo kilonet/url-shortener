@@ -19,17 +19,17 @@ class ThreadExpiringUrlShortenerTest {
         val urlShortener = ThreadExpiringUrlShortener(HashmapUrlShortener(NanoIdRandomGenerator(),
             ConcurrentHashMapUrlStorage(ConcurrentHashMap())
         ), Executors.newScheduledThreadPool(1))
-        val createAlias: ExpiringUrl? = urlShortener.createAlias("google.com", Instant.now().toEpochMilli() + 300)
+        val alias: ExpiringUrl? = urlShortener.createAlias("google.com", Instant.now().toEpochMilli() + 300)
 
 
         // until expire exist
         Thread.sleep(100)
-        Assertions.assertTrue(urlShortener.getAlias(createAlias!!.url.key) != null)
+        Assertions.assertTrue(urlShortener.getAlias(alias!!.url.key) != null)
 
 
         // after expire removed
         Thread.sleep(300)
-        Assertions.assertTrue(urlShortener.getAlias(createAlias!!.url.key) == null)
+        Assertions.assertTrue(urlShortener.getAlias(alias!!.url.key) == null)
         Assertions.assertTrue(urlShortener.storage().size() == 0)
     }
 
