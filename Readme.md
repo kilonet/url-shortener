@@ -4,5 +4,5 @@
 
 ```
 mvn package
-java -jar .\target\url-shortener-1.0-SNAPSHOT.jar
+java -jar .\target\url-shortener-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
